@@ -104,7 +104,7 @@ func Md5Sum(input ...string) string {
 }
 
 // ControlRange controls a variable's value in a value range.
-// returns defaultValue if the range not provided or the value is not in the range,
+// returns defaultValue if the range not provided or the value is not in the range.
 func ControlRange(value interface{}, defaultValue interface{}, rangeValues ...interface{}) interface{} {
 	if rangeValues == nil || len(rangeValues) == 0 {
 		return defaultValue
