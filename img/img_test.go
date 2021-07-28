@@ -262,22 +262,55 @@ func addLabel(img *image.RGBA, x, y int, label string) {
 }*/
 
 func TestImage_DrawText(t *testing.T) {
-	im, _ := img.OpenLocalFile("E:\\test\\1.jpg") // 1900x1283
-	fo, _ := fontx.LoadFont("E:\\test\\Inkfree.ttf")
+	im, _ := img.OpenLocalFile("C:\\Users\\hehety\\Desktop\\1.png") // 1900x1283
+	fo, _ := fontx.LoadFont("C:\\Users\\hehety\\Desktop\\123\\STKAITI.TTF")
 	fc := &fontx.FontConfig{
 		Font:     fo.Font,
-		FontSize: 200,
+		FontSize: 50,
 		Color:    color.Black,
 	}
 	im.Blur(8)
 	metrics := fo.GetMetrics(fc)
-	for {
-		im.DrawText("Hello", fc, metrics, imaging.BottomRight, 500, 700)
-		im.DrawText("From", fc, metrics, imaging.BottomRight, 500, 500)
-		im.DrawText("Other Side", fc, metrics, imaging.BottomRight, 1100, 300)
-	}
-	out, _ := file.CreateFile("E:\\test\\TestImage_DrawText.jpg")
+	im.DrawText("HellogA2020东京奥运会", fc, metrics, imaging.TopLeft, 0, 0)
+	im.DrawText("HellogA2020东京奥运会", fc, metrics, imaging.Left, 0, 0)
+	im.DrawText("HellogA2020东京奥运会", fc, metrics, imaging.BottomLeft, 0, 0)
+	im.DrawText("奥运会", fc, metrics, imaging.Top, 0, 0)
+	im.DrawText("奥运会", fc, metrics, imaging.TopRight, 150, 0)
+	im.DrawText("奥运会", fc, metrics, imaging.Center, -75, 0)
+	im.DrawText("奥运会", fc, metrics, imaging.Bottom, 0, 0)
+	im.DrawText("奥运会", fc, metrics, imaging.BottomRight, 150, 0)
+	out, _ := file.CreateFile("C:\\Users\\hehety\\Desktop\\1-out-text.jpg")
+	img.Save(im, out, imaging.JPEG)
+}
 
+func TestImage_DrawMultiLineText(t *testing.T) {
+
+	im, _ := img.OpenLocalFile("C:\\Users\\hehety\\Desktop\\1.png") // 1900x1283
+	fo, _ := fontx.LoadFont("C:\\Users\\hehety\\Desktop\\123\\STKAITI.TTF")
+	fc := &fontx.FontConfig{
+		Font:      fo.Font,
+		FontSize:  50,
+		LineSpace: 20,
+		Color:     color.Black,
+	}
+	text := []string{
+		"君不见黄河之水天上来，奔流到海不复回。",
+		"君不见高堂明镜悲白发，朝如青丝暮成雪。",
+		"人生得意须尽欢，莫使金樽空对月。",
+		"天生我材必有用，千金散尽还复来。",
+		"烹羊宰牛且为乐，会须一饮三百杯。",
+		"岑夫子，丹丘生，将进酒，杯莫停。",
+		"与君歌一曲，请君为我倾耳听。",
+		"钟鼓馔玉不足贵，但愿长醉不愿醒。",
+		"古来圣贤皆寂寞，惟有饮者留其名。",
+		"陈王昔时宴平乐，斗酒十千恣欢谑。",
+		"主人何为言少钱，径须沽取对君酌。",
+		"五花马、千金裘，呼儿将出换美酒，与尔同销万古愁。",
+	}
+	im.Blur(8)
+	metrics := fo.GetMetrics(fc)
+	im.DrawMultiLineText(text, fc, metrics, imaging.TopRight, 1500, 0)
+	out, _ := file.CreateFile("C:\\Users\\hehety\\Desktop\\2-out-text.jpg")
 	img.Save(im, out, imaging.JPEG)
 }
 

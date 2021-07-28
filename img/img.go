@@ -2,8 +2,8 @@ package img
 
 import (
 	"bytes"
+	"github.com/beta/freetype"
 	"github.com/disintegration/imaging"
-	"github.com/golang/freetype"
 	"github.com/hetianyi/gox/file"
 	"github.com/hetianyi/gox/fontx"
 	"golang.org/x/image/font"
@@ -353,12 +353,12 @@ func (img *Image) DrawText(content string, fc *fontx.FontConfig, m font.Metrics,
 	ctx.SetHinting(font.HintingNone)
 
 	offset := 0
-	if anchor == imaging.Top || anchor == imaging.TopLeft {
-		offset = m.Ascent.Ceil() - m.Descent.Ceil()
+	if anchor == imaging.Top || anchor == imaging.TopLeft || anchor == imaging.TopRight {
+		offset = m.Height.Ceil()
 	} else if anchor == imaging.Left || anchor == imaging.Right || anchor == imaging.Center {
-		offset = (m.Ascent.Ceil() - m.Descent.Ceil()) / 2
+		offset = m.Height.Ceil()/2 - m.Descent.Ceil()
 	} else if anchor == imaging.BottomLeft || anchor == imaging.Bottom || anchor == imaging.BottomRight {
-		offset = -m.Descent.Ceil() + m.Descent.Ceil()
+		offset = -m.Descent.Ceil()
 	}
 
 	pot := CalculatePt2(img.src.Bounds().Max, image.Point{0, 0}, anchor, marginX, marginY)
@@ -366,6 +366,68 @@ func (img *Image) DrawText(content string, fc *fontx.FontConfig, m font.Metrics,
 	if err != nil {
 		return img, err
 	}
+	return img, nil
+}
+
+// DrawMultiLineText draws multi-line text on the image.
+// anchor is text align,
+// lineHeight is text line height which is default equals to FontSize,
+// marginX and marginY is the margin to nearest border, if the nearest border is not clear, such as imaging.Center,
+// marginX and marginY always reference to the left border or the top border.
+// example:
+//  im, _ := img.OpenLocalFile("E:\\test\\1.jpg") // 1900x1283
+//	fo, _ := fontx.LoadFont("E:\\test\\Inkfree.ttf")
+//	fc := &fontx.FontConfig{
+//		Font:     fo.Font,
+//		FontSize: 200,
+//		Color:    color.Black,
+//	}
+//	metrics := fo.GetMetrics(fc)
+//	im.DrawText("Hello", fc, metrics, imaging.BottomRight, 500, 700)
+// 尝试在image上绘制文字。
+// 参数anchor是文字的对齐方式，marginX和marginY是文字的边距。
+// 参数lineHeight是文字行高，可以和字体大小相等也可以是字体大小的数倍。
+// 例如，当anchor=imaging.BottomRight，此时marginX是距离底边的距离，marginY是距离有边框的距离。
+// 当anchor=imaging.BottomRight，此时marginX是距离底边的距离，marginY是距离有边框的距离。
+func (img *Image) DrawMultiLineText(content []string, fc *fontx.FontConfig, m font.Metrics, anchor imaging.Anchor, marginX int, marginY int) (*Image, error) {
+	if len(content) == 0 {
+		return img, nil
+	}
+	if fc.FontSize <= 0 {
+		fc.FontSize = 30
+	}
+	if fc.LineSpace <= 0 {
+		fc.LineSpace = 0
+	}
+	ctx := freetype.NewContext()
+	ctx.SetDPI(DefaultDPI)
+	ctx.SetFont(fc.Font)
+	ctx.SetFontSize(fc.FontSize)
+	ctx.SetClip(img.src.Bounds())
+	//overPaintImage := image.NewRGBA(img.src.Bounds())
+	//draw.Draw(overPaintImage, img.src.Bounds(), img.src, image.ZP, draw.Over)
+	ctx.SetDst((img.src.(interface{})).(draw.Image))
+	ctx.SetSrc(image.NewUniform(fc.Color))
+	ctx.SetHinting(font.HintingNone)
+
+	offset := 0
+	if anchor == imaging.Top || anchor == imaging.TopLeft || anchor == imaging.TopRight {
+		offset = m.Height.Ceil()
+	} else if anchor == imaging.Left || anchor == imaging.Right || anchor == imaging.Center {
+		offset = m.Height.Ceil()/2 - m.Descent.Ceil()
+	} else if anchor == imaging.BottomLeft || anchor == imaging.Bottom || anchor == imaging.BottomRight {
+		offset = -m.Descent.Ceil()
+	}
+
+	pot := CalculatePt2(img.src.Bounds().Max, image.Point{0, 0}, anchor, marginX, marginY)
+
+	for i, t := range content {
+		_, err := ctx.DrawString(t, freetype.Pt(pot.X, pot.Y+offset+int(fc.FontSize)*i+int(fc.LineSpace*float64(i+1))))
+		if err != nil {
+			return img, err
+		}
+	}
+
 	return img, nil
 }
 

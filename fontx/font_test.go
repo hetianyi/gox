@@ -16,19 +16,19 @@ import (
 )
 
 var (
-	dpi      float64 = 72                       // screen resolution in Dots Per Inch
-	fontfile         = "E:\\test\\STXINGKA.TTF" // filename of the ttf font
-	hinting          = "none"                   // none | full
-	size     float64 = 52                       // font size in points
-	spacing  float64 = 1.5                      // line spacing (e.g. 2 means double spaced)
-	wonb             = true                     // white text on a black background
+	dpi      float64 = 72                                             // screen resolution in Dots Per Inch
+	fontfile         = "C:\\Users\\hehety\\Desktop\\123\\STKAITI.TTF" // filename of the ttf font
+	hinting          = "none"                                         // none | full
+	size     float64 = 32                                             // font size in points
+	spacing  float64 = 1.5                                            // line spacing (e.g. 2 means double spaced)
+	wonb             = true                                           // white text on a black background
 )
 
 var text = []string{
 	"’你好卡萨丁看书看到卡萨丁哪看得看哈喽Twas brillig, and the slithy toves",
 	"Did gyre and gimble in the wabe;",
-	"All mimsy were the borogoves,",
-	"And the mome raths outgrabe.",
+	"你好卡萨丁看书看到卡萨丁哪看得看哈喽,",
+	"你好卡萨丁看书看到卡萨丁哪看得看哈喽.",
 	"",
 	"“Beware the Jabberwock, my son!",
 	"The jaws that bite, the claws that catch!",
@@ -79,7 +79,7 @@ func Test1(t *testing.T) {
 	if wonb {
 		fg = image.White
 	}
-	base, _ := img.OpenLocalFile("E:\\test\\2.jpg")
+	base, _ := img.OpenLocalFile("D:\\图片\\【20P】【多分辨率】触摸的质感\\zhigan.png")
 	// 以背景图的尺寸创建新画布
 	rgba := image.NewRGBA(image.Rect(0, 0, base.GetSource().Bounds().Max.X, base.GetSource().Bounds().Max.Y))
 
@@ -108,11 +108,11 @@ func Test1(t *testing.T) {
 			log.Println(err)
 			return
 		}
-		pt.Y += c.PointToFixed(size * 0.5)
+		pt.Y += c.PointToFixed(size * 2)
 	}
 
 	// 保存
-	outFile, err := os.Create("E:\\test\\out.png")
+	outFile, err := os.Create("C:\\Users\\hehety\\Desktop\\out.png")
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)

@@ -1,17 +1,18 @@
 package fontx
 
 import (
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
+	"github.com/beta/freetype"
+	"github.com/beta/freetype/truetype"
 	"golang.org/x/image/font"
 	"image/color"
 	"io/ioutil"
 )
 
 type FontConfig struct {
-	Font     *truetype.Font
-	FontSize float64
-	Color    color.Color
+	Font      *truetype.Font
+	FontSize  float64
+	LineSpace float64
+	Color     color.Color
 }
 
 type TrueTypeFont struct {
