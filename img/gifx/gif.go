@@ -19,10 +19,17 @@ type Gif struct {
 	src *gif.GIF
 }
 
+// 获取原gif
 func (src *Gif) GetSource() *gif.GIF {
 	return src.src
 }
 
+// NewGif 构造一个新Gif类
+func NewGif(gif *gif.GIF) *Gif {
+	return &Gif{gif}
+}
+
+// LoadFromLocalFile 从文件加载gif
 func LoadFromLocalFile(path string) (*Gif, error) {
 	f, err := file.GetFile(path)
 	if err != nil {
@@ -34,19 +41,21 @@ func LoadFromLocalFile(path string) (*Gif, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Gif{g}, nil
+	return NewGif(g), nil
 }
 
+// LoadFromReader 从流加载gif
 func LoadFromReader(reader io.Reader) (*Gif, error) {
 	g, err := gif.DecodeAll(reader)
 	if err != nil {
 		return nil, err
 	}
-	return &Gif{g}, nil
+	return NewGif(g), nil
 }
 
 // AddWaterMark adds a watermark to this image.
-// 为次图像添加水印
+//
+// 为次图像添加水印。
 func (src *Gif) AddWaterMark(watermark *img.Image, anchor imaging.Anchor, paddingX int, paddingY int, opacity float64) (*Gif, error) {
 	g := src.src
 	//imgWidth, imgHeight := getGifDimensions(g)
@@ -77,7 +86,10 @@ func (src *Gif) AddWaterMark(watermark *img.Image, anchor imaging.Anchor, paddin
 	return src, nil
 }
 
-func Generate(images []*img.Image, delay []int, loopCount int) (*Gif, error) {
+// Generate generates gif using the given images.
+//
+// 用给定的一系列图片生成一张gif。
+func CreateGif(images []*img.Image, delay []int, loopCount int) (*Gif, error) {
 	g := &gif.GIF{
 		LoopCount: loopCount,
 		Delay:     delay,

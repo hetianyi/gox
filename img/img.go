@@ -43,7 +43,7 @@ func OpenLocalFile(filename string, opts ...imaging.DecodeOption) (*Image, error
 	if err != nil {
 		return nil, err
 	}
-	return &Image{img}, nil
+	return NewImage(img), nil
 }
 
 // GetSource returns source image.Image.
@@ -62,12 +62,12 @@ func OpenReader(src io.Reader, opts ...imaging.DecodeOption) (*Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Image{img}, nil
+	return NewImage(img), nil
 }
 
 // Clone clones and returns a new Image.
 func (img *Image) Clone() *Image {
-	return &Image{img.src}
+	return NewImage(imaging.Clone(img.src))
 }
 
 // Resize resizes the image to the specified width and height using the specified resampling filter
@@ -78,8 +78,7 @@ func (img *Image) Clone() *Image {
 //  dstImage := imaging.Resize(srcImage, 800, 600, imaging.Lanczos)
 // 调整大小使用指定的重采样过滤器将图像调整为指定的宽度和高度，并返回变换后的图像。 如果宽度或高度中的一个为0，则保留图像宽高比。
 func (img *Image) Resize(width int, height int, filter imaging.ResampleFilter) *Image {
-	img.src = imaging.Resize(img.src, width, height, filter)
-	return img
+	return NewImage(imaging.Resize(img.src, width, height, filter))
 }
 
 // Crop cuts out a rectangular region with the specified size from the image using
@@ -89,8 +88,7 @@ func (img *Image) Resize(width int, height int, filter imaging.ResampleFilter) *
 //  imaging.CropAnchor(src, 100, 100, imaging.TopLeft)
 // 使用指定的锚点从图像中剪切出具有指定大小的矩形区域，并返回裁剪后的图像。
 func (img *Image) Crop(width int, height int, anchor imaging.Anchor) *Image {
-	img.src = imaging.CropAnchor(img.src, width, height, anchor)
-	return img
+	return NewImage(imaging.CropAnchor(img.src, width, height, anchor))
 }
 
 // Blur produces a blurred version of the image using a Gaussian function.
@@ -101,15 +99,13 @@ func (img *Image) Crop(width int, height int, anchor imaging.Anchor) *Image {
 //  dstImage := imaging.Blur(srcImage, 3.5)
 // 模糊使用高斯函数生成图像的模糊版本。 Sigma参数必须为正，表示图像模糊的程度。
 func (img *Image) Blur(sigma float64) *Image {
-	img.src = imaging.Blur(img.src, sigma)
-	return img
+	return NewImage(imaging.Blur(img.src, sigma))
 }
 
 // Gray produces a grayscale version of the image.
 // 使图像变为黑白。
 func (img *Image) Gray() *Image {
-	img.src = imaging.Grayscale(img.src)
-	return img
+	return NewImage(imaging.Grayscale(img.src))
 }
 
 // AdjustContrast changes the contrast of the image using the percentage parameter and returns the adjusted image.
@@ -126,8 +122,7 @@ func (img *Image) Gray() *Image {
 //
 // 百分比= 0给出原始图像。 百分比= -100给出纯灰色图像。
 func (img *Image) AdjustContrast(percentage float64) *Image {
-	img.src = imaging.AdjustContrast(img.src, percentage)
-	return img
+	return NewImage(imaging.AdjustContrast(img.src, percentage))
 }
 
 // Sharpen produces a sharpened version of the image. Sigma parameter must be positive and indicates how much the image will be sharpened.
@@ -135,16 +130,14 @@ func (img *Image) AdjustContrast(percentage float64) *Image {
 //  dstImage := imaging.Sharpen(srcImage, 3.5)
 //锐化生成图像的锐化版本。 Sigma参数必须为正，表示图像将被锐化多少。
 func (img *Image) Sharpen(percentage float64) *Image {
-	img.src = imaging.Sharpen(img.src, percentage)
-	return img
+	return NewImage(imaging.Sharpen(img.src, percentage))
 }
 
 // Invert produces an inverted (negated) version of the image.
 //
 // 反转产生图像的反转（否定）版本。
 func (img *Image) Invert() *Image {
-	img.src = imaging.Invert(img.src)
-	return img
+	return NewImage(imaging.Invert(img.src))
 }
 
 // Convolve3x3 convolves the image with the specified 3x3 convolution kernel.
@@ -153,8 +146,7 @@ func (img *Image) Invert() *Image {
 // Convolve3x3使用指定的3x3卷积内核对图像进行卷积。
 // 如果传递了nil * ConvolveOptions，则使用默认参数。
 func (img *Image) Convolve3x3(kernel [9]float64) *Image {
-	img.src = imaging.Convolve3x3(img.src, kernel, nil)
-	return img
+	return NewImage(imaging.Convolve3x3(img.src, kernel, nil))
 }
 
 // Convolve5x5 convolves the image with the specified 5x5 convolution kernel.
@@ -163,8 +155,7 @@ func (img *Image) Convolve3x3(kernel [9]float64) *Image {
 // Convolve5x5使用指定的5x5卷积内核对图像进行卷积。
 // 如果传递了nil * ConvolveOptions，则使用默认参数。
 func (img *Image) Convolve5x5(kernel [25]float64) *Image {
-	img.src = imaging.Convolve5x5(img.src, kernel, nil)
-	return img
+	return NewImage(imaging.Convolve5x5(img.src, kernel, nil))
 }
 
 // AdjustBrightness changes the brightness of the image using the percentage parameter and returns the adjusted image. The percentage must be in range (-100, 100). The percentage = 0 gives the original image. The percentage = -100 gives solid black image. The percentage = 100 gives solid white image.
@@ -177,8 +168,7 @@ func (img *Image) Convolve5x5(kernel [25]float64) *Image {
 // 百分比必须在范围内（-100,100）。 百分比= 0给出原始图像。
 // 百分比= -100给出纯黑色图像。 百分比= 100给出纯白图像。
 func (img *Image) AdjustBrightness(percentage float64) *Image {
-	img.src = imaging.AdjustBrightness(img.src, percentage)
-	return img
+	return NewImage(imaging.AdjustBrightness(img.src, percentage))
 }
 
 // AdjustGamma performs a gamma correction on the image and returns the adjusted image. Gamma parameter must be positive. Gamma = 1.0 gives the original image. Gamma less than 1.0 darkens the image and gamma greater than 1.0 lightens it.
@@ -188,8 +178,7 @@ func (img *Image) AdjustBrightness(percentage float64) *Image {
 // Gamma参数必须为正数。 Gamma = 1.0给出原始图像。
 // 小于1.0的伽玛使图像变暗，大于1.0的伽玛使其变亮。
 func (img *Image) AdjustGamma(gamma float64) *Image {
-	img.src = imaging.AdjustGamma(img.src, gamma)
-	return img
+	return NewImage(imaging.AdjustGamma(img.src, gamma))
 }
 
 // AdjustSaturation changes the saturation of the image using the percentage parameter
@@ -205,8 +194,7 @@ func (img *Image) AdjustGamma(gamma float64) *Image {
 // AdjustSaturation使用百分比参数更改图像的饱和度并返回调整后的图像。 百分比必须在范围（-100,100）内。 百分比= 0给出原始图像。
 // 百分比= 100表示每个像素的饱和度值加倍的图像。 百分比= -100给出的图像的饱和度值为每个像素（灰度）。
 func (img *Image) AdjustSaturation(percentage float64) *Image {
-	img.src = imaging.AdjustSaturation(img.src, percentage)
-	return img
+	return NewImage(imaging.AdjustSaturation(img.src, percentage))
 }
 
 // AdjustSigmoid changes the contrast of the image using a sigmoidal function and returns the adjusted image. It's a non-linear contrast change useful for photo adjustments as it preserves highlight and shadow detail. The midpoint parameter is the midpoint of contrast that must be between 0 and 1, typically 0.5. The factor parameter indicates how much to increase or decrease the contrast, typically in range (-10, 10). If the factor parameter is positive the image contrast is increased otherwise the contrast is decreased.
@@ -220,8 +208,7 @@ func (img *Image) AdjustSaturation(percentage float64) *Image {
 // 中点参数是对比度的中点，必须介于0和1之间，通常为0.5。 因子参数表示增加或减少对比度的程度，
 // 通常在范围（-10,10）内。 如果因子参数为正，则图像对比度增加，否则对比度降低
 func (img *Image) AdjustSigmoid(midpoint float64, factor float64) *Image {
-	img.src = imaging.AdjustSigmoid(img.src, midpoint, factor)
-	return img
+	return NewImage(imaging.AdjustSigmoid(img.src, midpoint, factor))
 }
 
 // Rotate rotates an image by the given angle counter-clockwise .
@@ -230,14 +217,12 @@ func (img *Image) AdjustSigmoid(midpoint float64, factor float64) *Image {
 //
 // 旋转将图像逆时针旋转给定角度。 角度参数是以度为单位的旋转角度。 bgColor参数指定旋转后未覆盖区域的颜色。
 func (img *Image) Rotate(angle float64, bgColor color.Color) *Image {
-	img.src = imaging.Rotate(img.src, angle, bgColor)
-	return img
+	return NewImage(imaging.Rotate(img.src, angle, bgColor))
 }
 
 // Transverse flips the image vertically.
 func (img *Image) Transverse() *Image {
-	img.src = imaging.Rotate90(imaging.Transverse(img.src))
-	return img
+	return NewImage(imaging.Rotate90(imaging.Transverse(img.src)))
 }
 
 // Fit scales down the image using the specified resample filter to fit the specified maximum width and height and returns the transformed image.
@@ -245,8 +230,7 @@ func (img *Image) Transverse() *Image {
 //  dstImage := imaging.Fit(srcImage, 800, 600, imaging.Lanczos)
 // 使用指定的重采样滤镜按比例缩小图像以适合指定的最大宽度和高度，并返回变换后的图像。
 func (img *Image) Fit(width int, height int, filter imaging.ResampleFilter) *Image {
-	img.src = imaging.Fit(img.src, width, height, filter)
-	return img
+	return NewImage(imaging.Fit(img.src, width, height, filter))
 }
 
 // Fill creates an image with the specified dimensions and fills it with the scaled source image.
@@ -255,8 +239,7 @@ func (img *Image) Fit(width int, height int, filter imaging.ResampleFilter) *Ima
 //  dstImage := imaging.Fill(srcImage, 800, 600, imaging.Center, imaging.Lanczos)
 // Fill创建具有指定尺寸的图像，并使用缩放的源图像填充它。 要在不拉伸的情况下获得正确的宽高比，将裁剪源图像。
 func (img *Image) Fill(width int, height int, anchor imaging.Anchor, filter imaging.ResampleFilter) *Image {
-	img.src = imaging.Fill(img.src, width, height, anchor, filter)
-	return img
+	return NewImage(imaging.Fill(img.src, width, height, anchor, filter))
 }
 
 /*
@@ -283,8 +266,7 @@ func addLabel(img *image.RGBA, x, y int, label string) {
 //  imaging.Paste(src1, src2, image.Pt(10, 100))
 // 粘贴将img图像粘贴到指定位置的背景图像并返回组合图像。
 func (img *Image) Paste(top *Image, pos image.Point) *Image {
-	img.src = imaging.Paste(img.src, top.src, pos)
-	return img
+	return NewImage(imaging.Paste(img.src, top.src, pos))
 }
 
 // Overlay draws an image over the background image at given position.
@@ -298,15 +280,13 @@ func (img *Image) Paste(top *Image, pos image.Point) *Image {
 //	dstImage := imaging.Overlay(imageOne, imageTwo, image.Pt(0, 0), 0.5)
 // 叠加在给定位置的背景图像上绘制img图像并返回合成图像。 不透明度参数是img图像层的不透明度，用于构成图像，它必须从0.0到1.0。
 func (img *Image) Overlay(top *Image, pos image.Point, opacity float64) *Image {
-	img.src = imaging.Overlay(img.src, top.src, pos, opacity)
-	return img
+	return NewImage(imaging.Overlay(img.src, top.src, pos, opacity))
 }
 
 func (img *Image) AddWaterMark(watermark *Image, anchor imaging.Anchor, marginX int, marginY int, opacity float64) *Image {
 	pot := CalculatePt(img.src.Bounds().Size(), watermark.GetSource().Bounds().Size(), anchor, marginX, marginY)
 	// render watermark.
-	img.src = imaging.Overlay(img.src, watermark.src, pot, opacity)
-	return img
+	return NewImage(imaging.Overlay(img.src, watermark.src, pot, opacity))
 }
 
 // JPEGQuality compressions jpeg without change the image size.
@@ -318,8 +298,7 @@ func (img *Image) Compress(quality int) *Image {
 	var buffer bytes.Buffer
 	jpeg.Encode(&buffer, img.src, &jpeg.Options{Quality: quality})
 	encoded, _ := imaging.Decode(&buffer)
-	img.src = encoded
-	return img
+	return NewImage(encoded)
 }
 
 // DrawText draws text on the image.
@@ -348,7 +327,8 @@ func (img *Image) DrawText(content string, fc *fontx.FontConfig, m font.Metrics,
 	ctx.SetClip(img.src.Bounds())
 	//overPaintImage := image.NewRGBA(img.src.Bounds())
 	//draw.Draw(overPaintImage, img.src.Bounds(), img.src, image.ZP, draw.Over)
-	ctx.SetDst((img.src.(interface{})).(draw.Image))
+	nImg := NewImage(imaging.Clone(img.src))
+	ctx.SetDst((nImg.src.(interface{})).(draw.Image))
 	ctx.SetSrc(image.NewUniform(fc.Color))
 	ctx.SetHinting(font.HintingNone)
 
@@ -366,7 +346,7 @@ func (img *Image) DrawText(content string, fc *fontx.FontConfig, m font.Metrics,
 	if err != nil {
 		return img, err
 	}
-	return img, nil
+	return nImg, nil
 }
 
 // DrawMultiLineText draws multi-line text on the image.
@@ -406,7 +386,8 @@ func (img *Image) DrawMultiLineText(content []string, fc *fontx.FontConfig, m fo
 	ctx.SetClip(img.src.Bounds())
 	//overPaintImage := image.NewRGBA(img.src.Bounds())
 	//draw.Draw(overPaintImage, img.src.Bounds(), img.src, image.ZP, draw.Over)
-	ctx.SetDst((img.src.(interface{})).(draw.Image))
+	nImg := NewImage(imaging.Clone(img.src))
+	ctx.SetDst((nImg.src.(interface{})).(draw.Image))
 	ctx.SetSrc(image.NewUniform(fc.Color))
 	ctx.SetHinting(font.HintingNone)
 
@@ -424,22 +405,47 @@ func (img *Image) DrawMultiLineText(content []string, fc *fontx.FontConfig, m fo
 	for i, t := range content {
 		_, err := ctx.DrawString(t, freetype.Pt(pot.X, pot.Y+offset+int(fc.FontSize)*i+int(fc.LineSpace*float64(i+1))))
 		if err != nil {
-			return img, err
+			return nImg, err
 		}
 	}
 
-	return img, nil
+	return nImg, nil
 }
 
 // Paste pastes the img image to the background image at the specified position and returns the combined image.
 func Paste(background Image, img Image, pos image.Point) *Image {
-	return &Image{imaging.Paste(background.src, img.src, pos)}
+	return NewImage(imaging.Paste(background.src, img.src, pos))
 }
 
 // Overlay draws the img image over the background image at given position and returns the combined image.
 // Opacity parameter is the opacity of the img image layer, used to compose the images, it must be from 0.0 to 1.0.
 func Overlay(background Image, img Image, pos image.Point, opacity float64) *Image {
-	return &Image{imaging.Overlay(background.src, img.src, pos, opacity)}
+	return NewImage(imaging.Overlay(background.src, img.src, pos, opacity))
+}
+
+// Thumbnail scales the image up or down using the specified resample filter, crops it to the specified width and hight and returns the transformed image.
+//
+// Example:
+//
+//  dstImage := img.Thumbnail(srcImage, 100, 100, imaging.Lanczos)
+//
+// 获取图像指定尺寸的缩略图
+func (img *Image) Thumbnail(width, height int, filter imaging.ResampleFilter) *Image {
+	return NewImage(imaging.Thumbnail(img.GetSource(), width, height, filter))
+}
+
+// FlipH flips the image horizontally (from left to right) and returns the transformed image.
+//
+// 水平翻转图像（从左到右）并返回变换后的图像。
+func (img *Image) FlipH() *Image {
+	return NewImage(imaging.FlipH(img.GetSource()))
+}
+
+// FlipV flips the image vertically (from top to bottom) and returns the transformed image.
+//
+// 垂直翻转图像（从上到下）并返回转换后的图像。
+func (img *Image) FlipV() *Image {
+	return NewImage(imaging.FlipV(img.GetSource()))
 }
 
 // CalculatePt calculates point according to the given point.
