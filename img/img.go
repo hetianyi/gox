@@ -91,6 +91,16 @@ func (img *Image) Crop(width int, height int, anchor imaging.Anchor) *Image {
 	return NewImage(imaging.CropAnchor(img.src, width, height, anchor))
 }
 
+// Crop cuts out a rectangular region with the specified size from the image using
+// the specified anchor point and returns the cropped image.
+// Example:
+//
+//  imaging.CropAnchor(src, 100, 100, imaging.TopLeft)
+// 使用指定的锚点从图像中剪切出具有指定大小的矩形区域，并返回裁剪后的图像。
+func (img *Image) CropV2(width, height, x, y int) *Image {
+	return NewImage(imaging.Crop(img.src, image.Rect(x, y, x+width, y+height)))
+}
+
 // Blur produces a blurred version of the image using a Gaussian function.
 // Sigma parameter must be positive and indicates how much the image will be blurred.
 //

@@ -364,3 +364,10 @@ func TestImage_FlipH(t *testing.T) {
 	out, _ := file.CreateFile("C:\\Users\\hehety\\Desktop\\th-out.jpg")
 	img.Save(r, out, imaging.JPEG)
 }
+
+func TestImage_CropV2(t *testing.T) {
+	im, _ := img.OpenLocalFile("C:\\Users\\hehety\\Desktop\\1.png")
+	v2 := im.CropV2(200, 200, 1100, 850)
+	out, _ := file.CreateFile("D:\\tmp\\cropv2-out.jpg")
+	img.Save(v2, out, imaging.JPEG)
+}
