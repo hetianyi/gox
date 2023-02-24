@@ -36,9 +36,7 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8 // indirect
 	golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff
-	golang.org/x/net v0.0.0-20190611141213-3f473d35a33a // indirect
-	golang.org/x/sys v0.0.0-20190610200419-93c9922d18ae // indirect
+	golang.org/x/net v0.7.0 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
 )
